@@ -1,0 +1,15 @@
+Metric,Value
+Total Records,4999
+Unique Incidents,1870
+Date Range Start,2018-10-03
+Date Range End,2018-10-04
+Average Resolution Time (Hours),67.28
+Median Resolution Time (Hours),18.1
+SLA Targets Met (%),81.05
+Critical Priority (%),0.38
+High Priority (%),11.08
+Software Category (%),69.77
+Hardware Category (%),23.08
+Closed Status (%),97.74
+Top Assignment Group,SFA-PI-PO-Lev2
+Most Common Close Code,Other not on list

@@ -1,0 +1,346 @@
+{
+  "dashboard_title": "ITSM Service Management Dashboard",
+  "description": "Comprehensive ITSM analytics dashboard for ServiceNow incident management",
+  "slug": "itsm-service-management-dashboard",
+  "published": true,
+  "position_json": "{\"DASHBOARD_VERSION_KEY\": \"v2\", \"ROOT_ID\": {\"children\": [\"TABS-1\"], \"id\": \"ROOT_ID\", \"type\": \"ROOT\"}}",
+  "metadata": {
+    "color_scheme": "supersetColors",
+    "refresh_frequency": 300,
+    "timed_refresh_immune_slices": [],
+    "expanded_slices": {},
+    "label_colors": {},
+    "shared_label_colors": {},
+    "color_scheme_domain": [],
+    "cross_filters_enabled": true,
+    "filter_sets_configuration": []
+  },
+  "charts": [
+    {
+      "slice_name": "Daily Incident Volume Trend",
+      "viz_type": "line",
+      "params": {
+        "datasource": "marts.mart_daily_kpis",
+        "viz_type": "line",
+        "x_axis": "created_date",
+        "metrics": ["total_incidents"],
+        "groupby": [],
+        "time_range": "Last 30 days",
+        "rolling_type": "None",
+        "line_interpolation": "linear",
+        "show_markers": true,
+        "rich_tooltip": true,
+        "show_legend": true,
+        "x_axis_label": "Date",
+        "y_axis_label": "Number of Incidents",
+        "y_axis_bounds": [null, null]
+      },
+      "description": "Daily trend of incident volume over time"
+    },
+    {
+      "slice_name": "SLA Compliance Rate",
+      "viz_type": "big_number_total",
+      "params": {
+        "datasource": "marts.mart_daily_kpis",
+        "viz_type": "big_number_total",
+        "metric": "AVG(sla_compliance_pct)",
+        "time_range": "Last 30 days",
+        "subheader": "Average SLA Compliance %",
+        "y_axis_format": ".1f"
+      },
+      "description": "Overall SLA compliance percentage"
+    },
+    {
+      "slice_name": "Incident Priority Distribution",
+      "viz_type": "pie",
+      "params": {
+        "datasource": "marts.mart_incident_summary",
+        "viz_type": "pie",
+        "groupby": ["priority_level"],
+        "metric": "COUNT(*)",
+        "time_range": "Last 30 days",
+        "pie_label_type": "key_percent",
+        "donut": false,
+        "show_legend": true,
+        "color_scheme": "bnbColors"
+      },
+      "description": "Distribution of incidents by priority level"
+    },
+    {
+      "slice_name": "Category Breakdown",
+      "viz_type": "dist_bar",
+      "params": {
+        "datasource": "marts.mart_incident_summary",
+        "viz_type": "dist_bar",
+        "groupby": ["category"],
+        "metrics": ["COUNT(*)"],
+        "time_range": "Last 30 days",
+        "order_desc": true,
+        "show_legend": false,
+        "bottom_margin": "auto",
+        "x_axis_label": "Category",
+        "y_axis_label": "Count"
+      },
+      "description": "Incident count by category"
+    },
+    {
+      "slice_name": "Resolution Time Distribution",
+      "viz_type": "histogram",
+      "params": {
+        "datasource": "marts.mart_incident_summary",
+        "viz_type": "histogram",
+        "all_columns_x": ["resolution_time_hours"],
+        "time_range": "Last 30 days",
+        "link_length": "25",
+        "normalize_across": "heatmap",
+        "global_opacity": 1
+      },
+      "description": "Distribution of resolution times"
+    },
+    {
+      "slice_name": "Top Assignment Groups by Volume",
+      "viz_type": "table",
+      "params": {
+        "datasource": "marts.mart_group_performance",
+        "viz_type": "table",
+        "groupby": ["assignment_group"],
+        "metrics": ["total_assigned_incidents", "avg_resolution_time_hours", "sla_compliance_pct"],
+        "time_range": "Last 30 days",
+        "order_desc": true,
+        "order_by_cols": ["total_assigned_incidents"],
+        "page_length": 10,
+        "include_search": true,
+        "table_timestamp_format": "smart_date"
+      },
+      "description": "Performance metrics by assignment group"
+    },
+    {
+      "slice_name": "Hourly Incident Creation Pattern",
+      "viz_type": "line",
+      "params": {
+        "datasource": "marts.mart_incident_summary",
+        "viz_type": "line",
+        "x_axis": "created_hour",
+        "metrics": ["COUNT(*)"],
+        "groupby": [],
+        "time_range": "Last 30 days",
+        "line_interpolation": "linear",
+        "show_markers": true,
+        "x_axis_label": "Hour of Day",
+        "y_axis_label": "Incident Count"
+      },
+      "description": "Incident creation pattern by hour of day"
+    },
+    {
+      "slice_name": "First Contact Resolution Rate",
+      "viz_type": "big_number_total",
+      "params": {
+        "datasource": "marts.mart_daily_kpis", 
+        "viz_type": "big_number_total",
+        "metric": "AVG(fcr_rate_pct)",
+        "time_range": "Last 30 days",
+        "subheader": "FCR Rate %",
+        "y_axis_format": ".1f"
+      },
+      "description": "First Contact Resolution rate percentage"
+    },
+    {
+      "slice_name": "Open Incident Aging",
+      "viz_type": "pie",
+      "params": {
+        "datasource": "marts.mart_incident_summary",
+        "viz_type": "pie",
+        "groupby": ["aging_bucket"],
+        "metric": "COUNT(*)",
+        "adhoc_filters": [
+          {
+            "clause": "WHERE",
+            "subject": "current_state",
+            "operator": "IN",
+            "comparator": ["New", "In Progress", "On Hold"]
+          }
+        ],
+        "pie_label_type": "key_percent",
+        "donut": true,
+        "show_legend": true
+      },
+      "description": "Age distribution of currently open incidents"
+    },
+    {
+      "slice_name": "Weekly SLA Compliance Trend",
+      "viz_type": "line",
+      "params": {
+        "datasource": "marts.mart_daily_kpis",
+        "viz_type": "line", 
+        "x_axis": "created_week",
+        "metrics": ["AVG(sla_compliance_pct)"],
+        "groupby": [],
+        "time_range": "Last 12 weeks",
+        "rolling_type": "None",
+        "line_interpolation": "linear",
+        "show_markers": true,
+        "x_axis_label": "Week",
+        "y_axis_label": "SLA Compliance %",
+        "y_axis_bounds": [0, 100]
+      },
+      "description": "Weekly trend of SLA compliance percentage"
+    },
+    {
+      "slice_name": "Close Code Analysis",
+      "viz_type": "dist_bar",
+      "params": {
+        "datasource": "marts.mart_incident_summary",
+        "viz_type": "dist_bar",
+        "groupby": ["close_code"],
+        "metrics": ["COUNT(*)"],
+        "time_range": "Last 30 days",
+        "adhoc_filters": [
+          {
+            "clause": "WHERE",
+            "subject": "current_state", 
+            "operator": "==",
+            "comparator": "Closed"
+          }
+        ],
+        "order_desc": true,
+        "bottom_margin": "auto",
+        "x_axis_label": "Close Code",
+        "y_axis_label": "Count"
+      },
+      "description": "Distribution of close codes for resolved incidents"
+    },
+    {
+      "slice_name": "Business vs Off-Hours Incidents",
+      "viz_type": "pie",
+      "params": {
+        "datasource": "marts.mart_incident_summary",
+        "viz_type": "pie",
+        "groupby": ["created_during_business_hours"],
+        "metric": "COUNT(*)",
+        "time_range": "Last 30 days",
+        "pie_label_type": "key_percent",
+        "donut": false,
+        "show_legend": true
+      },
+      "description": "Incidents created during business hours vs off-hours"
+    }
+  ],
+  "native_filter_configuration": [
+    {
+      "id": "date_filter",
+      "filterType": "filter_time_range",
+      "targets": [
+        {
+          "datasetId": "marts.mart_daily_kpis",
+          "column": {
+            "name": "created_date"
+          }
+        },
+        {
+          "datasetId": "marts.mart_incident_summary", 
+          "column": {
+            "name": "created_date"
+          }
+        }
+      ],
+      "defaultDataMask": {
+        "filterState": {
+          "value": "Last 30 days"
+        }
+      },
+      "title": "Time Range",
+      "description": "Select date range for analysis"
+    },
+    {
+      "id": "priority_filter",
+      "filterType": "filter_select",
+      "targets": [
+        {
+          "datasetId": "marts.mart_incident_summary",
+          "column": {
+            "name": "priority_level"
+          }
+        }
+      ],
+      "defaultDataMask": {
+        "filterState": {
+          "value": null
+        }
+      },
+      "title": "Priority Level",
+      "description": "Filter by incident priority"
+    },
+    {
+      "id": "category_filter", 
+      "filterType": "filter_select",
+      "targets": [
+        {
+          "datasetId": "marts.mart_incident_summary",
+          "column": {
+            "name": "category"
+          }
+        }
+      ],
+      "defaultDataMask": {
+        "filterState": {
+          "value": null
+        }
+      },
+      "title": "Category",
+      "description": "Filter by incident category"
+    }
+  ],
+  "layout": {
+    "DASHBOARD_VERSION_KEY": "v2",
+    "ROOT_ID": {
+      "children": ["TABS-1"],
+      "id": "ROOT_ID",
+      "type": "ROOT"
+    },
+    "TABS-1": {
+      "children": ["GRID-1"],
+      "id": "TABS-1", 
+      "meta": {
+        "text": "ITSM Analytics"
+      },
+      "type": "TABS"
+    },
+    "GRID-1": {
+      "children": ["ROW-1", "ROW-2", "ROW-3", "ROW-4"],
+      "id": "GRID-1",
+      "type": "GRID"
+    },
+    "ROW-1": {
+      "children": ["CHART-1", "CHART-2", "CHART-8"],
+      "id": "ROW-1",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "type": "ROW"
+    },
+    "ROW-2": {
+      "children": ["CHART-3", "CHART-4"],
+      "id": "ROW-2", 
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "type": "ROW"
+    },
+    "ROW-3": {
+      "children": ["CHART-5", "CHART-6"],
+      "id": "ROW-3",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT" 
+      },
+      "type": "ROW"
+    },
+    "ROW-4": {
+      "children": ["CHART-7", "CHART-9", "CHART-10"],
+      "id": "ROW-4",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "type": "ROW"
+    }
+  }
+}

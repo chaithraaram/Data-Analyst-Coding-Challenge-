@@ -1,0 +1,48 @@
+name: 'itsm_analytics'
+version: '1.0.0'
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'itsm_analytics'
+
+# These configurations specify where dbt should look for different types of files.
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Configuring models
+models:
+  itsm_analytics:
+    # Applies to all files under models/staging/
+    staging:
+      +materialized: view
+      +schema: staging
+    # Applies to all files under models/marts/
+    marts:
+      +materialized: table
+      +schema: marts
+    # Applies to all files under models/intermediate/
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+
+vars:
+  # Define variables that can be used in models
+  current_date: '{{ run_started_at.strftime("%Y-%m-%d") }}'
+  timezone: 'UTC'
+
+# Enable tests
+on-run-start:
+  - "{{ create_udfs() }}"
+
+# Documentation configuration
+docs:
+  generate: true

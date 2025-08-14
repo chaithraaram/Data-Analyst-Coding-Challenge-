@@ -1,0 +1,42 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Raw ITSM data from ServiceNow"
+    tables:
+      - name: itsm_raw_tickets
+        description: "Raw ServiceNow incident tickets"
+        columns:
+          - name: inc_number
+            description: "Unique incident number"
+            tests:
+              - not_null
+              - unique
+          - name: inc_sys_created_on
+            description: "Incident creation timestamp"
+            tests:
+              - not_null
+          - name: inc_category
+            description: "Incident category"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['Software', 'Hardware-Infrastructure', 'Workstation', 'Finance', 'Network', 'Business Service', 'Collaboration', 'Facilities', 'Hardware']
+          - name: inc_priority
+            description: "Incident priority level"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['1 - Critical', '2 - High', '3 - Moderate', '4 - Low']
+          - name: inc_state
+            description: "Current state of the incident"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['New', 'In Progress', 'On Hold', 'Closed', 'Canceled']
+          - name: resolution_time_hours
+            description: "Time taken to resolve the incident in hours"
+            tests:
+              - dbt_utils.expression_is_true:
+                  expression: ">= 0"
+                  condition: "resolution_time_hours IS NOT NULL"

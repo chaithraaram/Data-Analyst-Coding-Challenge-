@@ -1,0 +1,123 @@
+version: 2
+
+models:
+  - name: stg_itsm_incidents
+    description: "Staging model for ServiceNow incident tickets with standardized fields and calculated metrics"
+    columns:
+      - name: incident_number
+        description: "Unique incident identifier"
+        tests:
+          - not_null
+          - unique
+      - name: priority_level
+        description: "Standardized priority level (Critical, High, Moderate, Low)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Critical', 'High', 'Moderate', 'Low', 'Unknown']
+      - name: category
+        description: "Incident category classification"
+        tests:
+          - not_null
+      - name: current_state
+        description: "Current state of the incident"
+        tests:
+          - not_null
+      - name: created_at
+        description: "Timestamp when incident was created"
+        tests:
+          - not_null
+      - name: resolution_time_hours
+        description: "Time taken to resolve incident in hours"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              condition: "resolution_time_hours IS NOT NULL"
+      - name: sla_status
+        description: "SLA compliance status (Met, Missed, Unknown)"
+        tests:
+          - accepted_values:
+              values: ['Met', 'Missed', 'Unknown']
+
+  - name: mart_incident_summary
+    description: "Comprehensive incident analysis mart with enriched metrics and business logic"
+    columns:
+      - name: incident_number
+        description: "Unique incident identifier"
+        tests:
+          - not_null
+          - unique
+      - name: resolution_timeframe
+        description: "Categorization of resolution timing"
+        tests:
+          - accepted_values:
+              values: ['Same Day', 'Multi-Day', 'Unresolved']
+      - name: fcr_flag
+        description: "First Contact Resolution flag"
+        tests:
+          - accepted_values:
+              values: ['FCR', 'Non-FCR']
+      - name: aging_bucket
+        description: "Age category for open incidents"
+        tests:
+          - accepted_values:
+              values: ['New (≤ 1 day)', 'Recent (1-7 days)', 'Aging (1-4 weeks)', 'Critical Age (> 30 days)']
+
+  - name: mart_daily_kpis
+    description: "Daily aggregated KPIs for ITSM performance monitoring"
+    columns:
+      - name: created_date
+        description: "Date of incident creation"
+        tests:
+          - not_null
+          - unique
+      - name: total_incidents
+        description: "Total number of incidents created on this date"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: sla_compliance_pct
+        description: "SLA compliance percentage for the day"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 0 AND 100"
+              condition: "sla_compliance_pct IS NOT NULL"
+      - name: closure_rate_pct
+        description: "Percentage of incidents closed on creation date"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 0 AND 100"
+
+  - name: mart_group_performance
+    description: "Assignment group performance analysis and rankings"
+    columns:
+      - name: assignment_group
+        description: "Name of the assignment group"
+        tests:
+          - not_null
+          - unique
+      - name: total_assigned_incidents
+        description: "Total incidents assigned to this group"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 5"  # Filter ensures meaningful volume
+      - name: performance_tier
+        description: "Overall performance classification"
+        tests:
+          - accepted_values:
+              values: ['High Performer', 'Good Performer', 'Average Performer', 'Needs Improvement']
+      - name: sla_compliance_pct
+        description: "SLA compliance percentage for the group"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 0 AND 100"
+              condition: "sla_compliance_pct IS NOT NULL"
+
+# Tests that run across multiple models
+tests:
+  - name: consistent_incident_counts
+    description: "Ensure incident counts are consistent across staging and marts"
+  - name: sla_logic_validation
+    description: "Validate SLA calculation logic"
